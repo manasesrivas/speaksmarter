@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: speaksmarker_db
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "speaksmarker"
+      MYSQL_USER: "speaksmarker"
+      MYSQL_PASSWORD: "password"
+    ports:
+      - "3306:3306"
+    
+    volumes:
+      - dbdata:/var/lib/mysql
+
+    networks:
+      - speaksmarker_network
+    
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: speaksmarker_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - speaksmarker_network
+    
+  web:
+    image: nginx:1.31.9-alpine
+    container_name: speaksmarker_web
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - speaksmarker_network
+
+volumes:
+  dbdata:
+
+networks:
+  speaksmarker_network:
