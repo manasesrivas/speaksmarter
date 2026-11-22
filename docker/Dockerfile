@@ -1,4 +1,3 @@
-# Imagen base con PHP 8.2 y FPM
 FROM php:8.5.13-fpm
 
 # Instalación de dependencias y extensiones de PHP necesarias para Laravel
